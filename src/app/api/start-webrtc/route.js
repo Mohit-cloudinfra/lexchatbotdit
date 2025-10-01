@@ -30,8 +30,8 @@ export async function POST(request) {
       contactId: response.ContactId,
     });
   } catch (error) {
-    console.error('StartWebRTCContact error:', error);
-    let message = 'Failed to initiate call. Please try again.';
+    console.error('StartWebRTCContact error:', error.name, error.message, error.stack);
+    let message = `Failed to initiate call: ${error.name} - ${error.message}`;
     if (error.name === 'ResourceNotFoundException' || error.message.includes('capacity')) {
       message = 'Agents are full. We will call you back.';
     }
