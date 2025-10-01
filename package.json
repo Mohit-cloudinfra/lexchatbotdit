@@ -1,0 +1,33 @@
+{
+  "name": "calendar",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@aws-sdk/client-connect": "^3.896.0",
+    "@aws-sdk/client-lex-runtime-v2": "^3.848.0",
+    "amazon-chime-sdk-js": "^3.29.0",
+    "amazon-connect-chatjs": "^3.1.5",
+    "amazon-connect-streams": "^2.19.1",
+    "aws-sdk": "^2.1692.0",
+    "axios": "^1.12.2",
+    "bootstrap": "^5.3.7",
+    "crypto-js": "^4.2.0",
+    "install": "^0.13.0",
+    "next": "15.3.2",
+    "npm": "^11.6.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.2"
+  }
+}

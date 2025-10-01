@@ -1,0 +1,71 @@
+:root {
+    --button-or: #ec6438; /* Blue; change here to update all */
+    --button-bl: #091d35;
+  }
+
+  .primary-button{
+    background-color: var(--button-bl);
+    color: white;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 25px;
+    border-radius: 50%;
+    padding: 10px;
+    width: 70px;
+    height: 70px;
+  }
+
+  .open-chat-container{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 25px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 500px;
+    height: 750px;
+  }
+  .chat-header{
+    /*bg-dark text-white p-3 d-flex justify-content-between align-items-center rounded-top*/
+    background-color: var(--button-bl);
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px 5px 0 0;
+  }
+
+  .chat-body{
+    /*p-3 overflow-auto" style={{ height: '400px' }}*/
+    padding: 10px;
+    overflow: auto;
+    height: 650px;
+  }
+  
+  .chat-footer{
+    /*d-flex p-2 border-top*/
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+  }
+
+  .custom-button {
+    border-color: var(--button-or);
+    color: var(--button-or);
+  }
+  
+  .custom-button:hover {
+    background-color: var(--button-or);
+    color: white;
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
