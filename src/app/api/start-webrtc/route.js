@@ -15,8 +15,8 @@ export async function POST(request) {
     });
 
     const command = new StartWebRTCContactCommand({
-      InstanceId: process.env.NEXT_PUBLIC_CONNECT_INSTANCE_ID || '564ddef5-1ce1-4d8d-abf9-0875eeec654c',
-      ContactFlowId: process.env.NEXT_PUBLIC_CONNECT_CONTACT_FLOW_ID || '4a39d555-5bc8-4ffb-b63c-b3a320739d62',
+      InstanceId: process.env.CONNECT_INSTANCE_ID || '564ddef5-1ce1-4d8d-abf9-0875eeec654c',
+      ContactFlowId: process.env.CONNECT_CONTACT_FLOW_ID || '4a39d555-5bc8-4ffb-b63c-b3a320739d62',
       ParticipantDetails: {
         DisplayName: attributes?.userName || 'Chatbot User',
       },

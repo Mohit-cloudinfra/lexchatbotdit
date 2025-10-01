@@ -23,8 +23,8 @@ export const initiateAgentChat = async (userName, setMessages, chatSessionRef) =
 
     const session = ChatSession.create({
       chatDetails: {
-        contactFlowId: process.env.NEXT_PUBLIC_CONNECT_CONTACT_FLOW_ID,
-        instanceId: process.env.NEXT_PUBLIC_CONNECT_INSTANCE_ID,
+        contactFlowId: process.env.CONNECT_CONTACT_FLOW_ID,
+        instanceId: process.env.CONNECT_INSTANCE_ID,
         participantDetails: {
           displayName: userName || 'Customer'
         }

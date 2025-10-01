@@ -15,7 +15,6 @@ export default function ChatManager() {
   const [userPhone, setUserPhone] = useState(null);
   const [userName, setUserName] = useState(null);
   const [isCalling, setIsCalling] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(false);
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -35,36 +34,11 @@ export default function ChatManager() {
   }, [isOpen, messages.length]);
 
   const handleInitiateCall = async () => {
-    if (isCalling || isConnecting) return;
-    setIsConnecting(true);
-    setMessages((prev) => [...prev, { type: 'bot', content: 'Connecting...' }]);
-  
-    let timeoutId;
-    let session;
-    let audioVideo;
+    if (isCalling) return;
+    setIsCalling(true);
+    setMessages((prev) => [...prev, { type: 'bot', content: 'Initiating call...' }]);
   
     try {
-      // Check microphone availability and permissions
-      try {
-        // Attempt to get microphone stream to trigger browser permission prompt
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        console.log('Microphone permission granted, stream:', stream);
-        // Release the stream to avoid conflicts with Chime SDK
-        stream.getTracks().forEach(track => track.stop());
-      } catch (permError) {
-        console.error('Microphone access error:', permError);
-        let errorMessage = 'Error accessing microphone. Please try again.';
-        if (permError.name === 'NotAllowedError') {
-          errorMessage = 'Microphone access denied. Please allow microphone permissions in your browser settings (e.g., Chrome: Settings > Privacy > Microphone > Allow localhost:3000) and refresh.';
-        } else if (permError.name === 'NotFoundError') {
-          errorMessage = 'No microphone found. Please connect a microphone (e.g., headset or built-in mic) and refresh. Check Windows Sound settings to ensure a microphone is enabled.';
-        }
-        setMessages((prev) => [...prev, { type: 'bot', content: errorMessage }]);
-        setIsConnecting(false);
-        setTimeout(() => setIsOpen(false), 5000); // Longer delay for user to read
-        return;
-      }
-  
       const response = await fetch('/api/start-webrtc', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -77,7 +51,7 @@ export default function ChatManager() {
       });
   
       const data = await response.json();
-      console.log('API Response Data:', data);
+      console.log('API Response Data:', data); // Debug: Check structure in console
   
       if (!data.success) {
         throw new Error(data.error);
@@ -90,82 +64,31 @@ export default function ChatManager() {
   
       const { ConsoleLogger, DefaultDeviceController, DefaultMeetingSession, LogLevel, MeetingSessionConfiguration } = await import('amazon-chime-sdk-js');
   
-      const logger = new ConsoleLogger('ChimeSDK', LogLevel.DEBUG);
+      const logger = new ConsoleLogger('ChimeSDK', LogLevel.INFO);
       const deviceController = new DefaultDeviceController(logger);
-  
-      // List audio input devices after permission
-      const audioInputDevices = await deviceController.listAudioInputDevices();
-      console.log('Available audio input devices after permission:', audioInputDevices);
-  
-      if (!audioInputDevices || audioInputDevices.length === 0) {
-        setMessages((prev) => [...prev, { type: 'bot', content: 'No microphone detected after permission. Please connect a microphone and refresh.' }]);
-        setIsConnecting(false);
-        setTimeout(() => setIsOpen(false), 5000);
-        return;
-      }
-  
-      // Select the first available microphone
-      await deviceController.chooseAudioInputDevice(audioInputDevices[0]);
-      console.log('Selected audio input device:', audioInputDevices[0]);
-  
       const configuration = new MeetingSessionConfiguration(connectionData.Meeting, connectionData.Attendee);
-      session = new DefaultMeetingSession(configuration, logger, deviceController);
-      audioVideo = session.audioVideo;
-  
-      const observer = {
-        audioVideoDidStart: () => {
-          console.log('WebRTC session started');
-          clearTimeout(timeoutId);
-          setMessages((prev) => [...prev, { type: 'bot', content: 'Connected to agent! Speak now.' }]);
-          setIsConnecting(false);
-          setIsCalling(true);
-        },
-        audioVideoDidFail: (error) => {
-          console.error('WebRTC session failed:', error);
-          setMessages((prev) => [...prev, { type: 'bot', content: 'Call failed: ' + error.message }]);
-          setIsConnecting(false);
-          setIsCalling(false);
-        },
-        audioInputFailed: (error) => {
-          console.error('Audio input failed:', error);
-          setMessages((prev) => [...prev, { type: 'bot', content: 'Microphone error. Please check permissions or connect a microphone.' }]);
-          setIsConnecting(false);
-          setIsCalling(false);
-        },
-      };
-      audioVideo.addObserver(observer);
+      const session = new DefaultMeetingSession(configuration, logger, deviceController);
+      const audioVideo = session.audioVideo;
   
       await audioVideo.start();
       audioVideo.bindAudioElement(document.getElementById('audio-element'));
   
-      timeoutId = setTimeout(() => {
-        audioVideo.stop();
-        audioVideo.removeObserver(observer);
-        setMessages((prev) => [...prev, { type: 'bot', content: 'Our agents are busy, we will call back.' }]);
-        setIsConnecting(false);
-        setTimeout(() => setIsOpen(false), 2000);
-      }, 10000);
+      setMessages((prev) => [...prev, { type: 'bot', content: 'Please wait while we connect you to our agent.' }]);
   
       audioVideo.realtimeSubscribeToReceiveDataMessage('callEnd', (data) => {
         if (data.text() === 'end') {
           audioVideo.stop();
-          audioVideo.removeObserver(observer);
           setMessages((prev) => [...prev, { type: 'bot', content: 'Call ended.' }]);
           setIsCalling(false);
-          setIsConnecting(false);
         }
       });
     } catch (error) {
       console.error('Voice call error:', error);
-      if (session && audioVideo) {
-        audioVideo.stop();
-      }
-      clearTimeout(timeoutId);
       setMessages((prev) => [...prev, { type: 'bot', content: error.message || 'Error connecting to agent.' }]);
-      setIsConnecting(false);
-      setTimeout(() => setIsOpen(false), 5000);
+      setIsCalling(false);
     }
   };
+
   const handleSendMessage = async (text, isQuickReply = false) => {
     const normalizedText = text.trim();
     setMessages(prev => [...prev, { type: 'user', content: normalizedText }]);
@@ -219,7 +142,7 @@ export default function ChatManager() {
             setConversationState('existing_zip');
             setMessages(prev => [...prev, { type: 'bot', content: 'Please enter your zipcode.' }]);
           } else {
-            setMessages(prev => [...prev, { type: 'bot', content: 'No zipcode found for this phone. Please try again by giving your correct phone number.' }]);
+            setMessages(prev => [...prev, { type: 'bot', content: 'Please try again by giving your correct phone number that you registered with us.' }]);
           }
         } catch (error) {
           setMessages(prev => [...prev, { type: 'bot', content: 'Error fetching data. Please try again.' }]);
