@@ -25,7 +25,7 @@ class Api {
   postAPI = (requestData, path) => {
     try {
       const endpoint = process.env.NEXT_PUBLIC_AWS_ENDPOINT;
-      const region = process.env.NEXT_PUBLIC_AWS_REGION;
+      const region = process.env.AWS_REGION;
       const request = new AWS.HttpRequest(endpoint, region);
       request.method = 'POST';
       request.path = path;
@@ -34,8 +34,8 @@ class Api {
       };
       request.body = JSON.stringify(requestData);
       const credentials = new AWS.Credentials({
-        accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       });
       const signer = new AWS.Signers.V4(request, 'execute-api');
       signer.addAuthorization(credentials, new Date());
@@ -70,16 +70,16 @@ class Api {
     try {
 
       AWS.config.update({
-        region: process.env.NEXT_PUBLIC_AWS_REGION, // Update with your AWS region
-        accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION, // Update with your AWS region
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
       });
 
       // Create an Axios instance with AWS Signature Version 4 interceptor
       const axiosWithAuth = Axios.create();
       axiosWithAuth.interceptors.request.use(async (config) => {
         const endpoint = endPoint
-        const region = process.env.NEXT_PUBLIC_AWS_REGION;
+        const region = process.env.AWS_REGION;
 
         // Create an AWS HttpRequest object
         const request = new AWS.HttpRequest(endpoint, region);
@@ -115,7 +115,7 @@ class Api {
   postAPINew = (requestData, path) => {
     try {
       const endpoint = process.env.NEXT_PUBLIC_AWS_ENDPOINT1;
-      const region = process.env.NEXT_PUBLIC_AWS_REGION;
+      const region = process.env.AWS_REGION;
       const request = new AWS.HttpRequest(endpoint, region);
       request.method = 'POST';
       request.path = path;
@@ -124,8 +124,8 @@ class Api {
       };
       request.body = JSON.stringify(requestData);
       const credentials = new AWS.Credentials({
-        accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID1,
-        secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY1,
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID1,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY1,
       });
       const signer = new AWS.Signers.V4(request, 'execute-api');
       signer.addAuthorization(credentials, new Date());
@@ -160,7 +160,7 @@ class Api {
       console.log("request data", requestData);
   
       const endpoint = process.env.NEXT_PUBLIC_AWS_ENDPOINT2;
-      const region = process.env.NEXT_PUBLIC_AWS_REGION1;
+      const region = process.env.AWS_REGION1;
   
       const request = new AWS.HttpRequest(endpoint, region);
       request.method = 'POST';
@@ -172,8 +172,8 @@ class Api {
       request.body = encryptedData;
   
       const credentials = new AWS.Credentials({
-        accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID2,
-        secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY2,
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID2,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY2,
       });
   
       const signer = new AWS.Signers.V4(request, 'execute-api');
